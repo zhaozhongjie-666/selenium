@@ -1,3 +1,5 @@
+selenium的常用方法
+
 Python WebDriver 工作原理
 webdriver 是按照 server – client 的经典设计模式设计的。 server 端就是 remote server，可以是任意的浏览器。当我们的脚本启动浏览器后，该浏览器就是remote server，它的职责就是等待 client 发送请求并做出响应； client 端简单说来就是我们的测试代码，我们测试代码中的一些行为，比如打开浏览器，转跳到特定的 url 等操作是以 http 请求的方式发送给被 测试浏览器，也就是 remote server；remote server 接受请求，并执行相应操作，并在 response 中返回执行状态、返回值等信息； webdriver 的工作流程： 
 1. WebDriver 启动目标浏览器， 并绑定到指定端口。 该启动的浏览器实例， 做为 web driver 的 remote server。 
@@ -623,6 +625,11 @@ for input in inputs:
   if input.get_attribute('data-node') == '594434493':   
     input.click() 
 …… 
+
+
+
+
+
 
 
 
