@@ -1,10 +1,13 @@
+selenium的常用方法
+
 Python WebDriver 工作原理
-webdriver 是按照 server – client 的经典设计模式设计的。 server 端就是 remote server，可以是任意的浏览器。当我们的脚本启动浏览器后，该浏览器就是remote server，它的职责就是等待 client 发送请求并做出响应； client 端简单说来就是我们的测试代码，我们测试代码中的一些行为，比如打开浏览器，转跳到特定的 url 等操作是以 http 请求的方式发送给被 测试浏览器，也就是 remote server；remote server 接受请求，并执行相应操作，并在 response 中返回执行状态、返回值等信息； webdriver 的工作流程： 
+webdriver 是按照 server – client 的经典设计模式设计的。 server 端就是 remote server，可以是任意的浏览器。当我们的脚本启动浏览器后，该浏览器就是remote server，它的职责就是等待 client 发送请求并做出响应； client 端简单说来就是我们的测试代码，我们测试代码中的一些行为，比如打开浏览器，转跳到特定的 url 等操作是以 http 请求的方式发送给被 测试浏览器，也就是 remote server；remote server 接受请求，并执行相应操作，并在 response 中返回执行状态、返回值等信息； 
+
+webdriver 的工作流程： 
 1. WebDriver 启动目标浏览器， 并绑定到指定端口。 该启动的浏览器实例， 做为 web driver 的 remote server。 
 2. Client 端通过 CommandExcuter 发送 HTTPRequest 给 remote server 的侦听端口（通信协议： the webriver wire protocol） 
 3. Remote server 需要依赖原生的浏览器组件（如：IEDriverServer .exe、chromedriver .exe） ，来转化转化浏览器的 native 调用。 
  
-
 
 Python版Selenium提供了一套用于编写功能测试及验收测试的API。利用这套简单的API，不仅可以很直观的接触到Selenium WebDriver的所有功能，而且还可以很方便的访问各类WebDrivers，如Firefox、Ie、Chrome、Remote等。目前Selenium支持的Python版本：2.7、3.2、3.3和3.4.
 
@@ -32,6 +35,7 @@ Python python_org_search.py
 实例分析
 
 Selenium.webdriver模块提供了webdriver的实现方法，目前支持这些方法的有Firefox、Chrome、IE和Remote。其中，Keys类提供了操作键盘的快捷键，如RETURE、F1、ALT等。
+
 1）导入相关的包
 [python] view plain copy print?
 from selenium import webdriver  
@@ -39,17 +43,23 @@ from selenium.webdriver.common.keys importKeys
 
 2）接下来，创建Firefoxwebdriver实例。
 driver = webdriver.Firefox()
+
 3）driver.get()尝试打开URL指定的网页，webdriver会等待网页元素加载完成之后才把控制权交回脚本。但是，如果要打开了页面在加载的过程中包含了很多AJAX，webdriver可能无法准确判断页面何时加载完成。
 driver.get("http://www.python.org")
+
 4）然后，使用断言判断页面标题包含“Python”：
 assert "Python" in driver.title
+
 5）webdriver提供了很多如find_element_by_*的方法来匹配要查找的元素。如，利用name属性查找方法find_element_by_name来定位输入框。元素定位方法可以参考后面章节-元素定位方法。
 elem = driver.find_element_by_name("q")
+
 6）send_keys方法可以用来模拟键盘操作，但首先要从selenium.webdriver.common.keys导入Keys类：
 elem.send_keys("pycon")
 elem.send_keys(Keys.RETURN)
+
 7）然后，提交请求页面并获得返回结果，另外，为了判断结果是否成功返回，可加入断言：
 assert "No results found." not in driver.page_source
+
 8）最后，操作完成并关闭浏览器。当然，也可以调用quit（）方法，两者的区别在于，quit（）方法会退出浏览器，而close（）方法只是关闭页面，但如果只有一个页面被打开，close（）方法同样会退出浏览器。
 driver.close()
  
@@ -63,22 +73,21 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys  
    
 class PythonOrgSearch(unittest.TestCase):  
+    def setUp(self):  
+        self.driver = webdriver.Firefox()  
    
-  def setUp(self):  
-    self.driver = webdriver.Firefox()  
-   
-  def test_search_in_python_org(self):  
-    driver = self.driver  
-    driver.get("http://www.python.org")  
-    self.assertIn("Python", driver.title)  
-    elem = driver.find_element_by_name("q")  
-    elem.send_keys("pycon")  
-    elem.send_keys(Keys.RETURN)  
-    assert "No results found." not in driver.page_source  
+  	 def test_search_in_python_org(self):  
+        driver = self.driver  
+        driver.get("http://www.python.org")  
+        self.assertIn("Python", driver.title)  
+        elem = driver.find_element_by_name("q")  
+        elem.send_keys("pycon")  
+        elem.send_keys(Keys.RETURN)  
+        assert "No results found." not in driver.page_source  
    
    
-  def tearDown(self):  
-    self.driver.close()  
+    def tearDown(self):  
+        self.driver.close()  
    
 if __name__ == "__main__":  
   unittest.main()  
@@ -93,6 +102,7 @@ Ran 1 test in 15.566s
 OK
 2.4 分析2.3中测试脚本
 1）首先需要导入相关模块，其中unittest是python的内置模块，它提供了组织测试用例的框架，而selenium.webdriver提供了所有WebDriver的实现，目前支持FireFox、Chrome、Ie和Remote。Keys类提供了关键字，如RETURN、F1、ALT等。代码如下：
+
 [python] view plain copy print?
 importunittest  
 fromselenium import webdriver  
@@ -100,26 +110,36 @@ fromselenium.webdriver.common.keys import Keys
 
 2）测试用例继承于unittest，代码如下：
 class PythonOrgSearch(unittest.TestCase):
+
 3）SetUp方法是初始化的一部分，它会在每个测试功能开始之前被调用，创建firefox webdriver实例的代码如下：
+
 defsetUp(self):
   self.driver=webdriver.Firefox()
+  
 4）创建测试用例，测试用例的方法名尽量以test字符串开头，代码的第一行创建webdriver实例对象的引用：
 deftest_search_in_python_org(self):
   driver=self.driver
+  
 5）driver.get()方法打开URL定义的网址，webdriver会等待到页面完全加载完成后将控制权重新交给测试脚本，代码如下：
 driver.get("http://www.python.org")
+
 6）然后，使用断言判断页面标题包含“Python”：
 assert "Python" in driver.title
+
 7）webdriver提供了很多如find_element_by_*的方法来匹配要查找的元素。如，利用name属性查找方法find_element_by_name来定位输入框。元素定位方法可以参考后面章节-元素定位方法。
 elem = driver.find_element_by_name("q")
+
 8）send_keys方法可以用来模拟键盘操作，但首先要从selenium.webdriver.common.keys导入Keys类：
 elem.send_keys("pycon")
 elem.send_keys(Keys.RETURN)
+
 9）然后，提交请求页面并获得返回结果，另外，为了判断结果是否成功返回，可加入断言：
 assert "No results found." not in driver.page_source
+
 10)所有测试用例执行完毕后会调用tearDown方法，这个方法主要执行清理工作。在本脚本中，tearDown方法执行关闭浏览器的操作，当然，也可以调用quit（）方法，两者的区别在于，quit（）方法会退出浏览器，而close（）方法只是关闭页面，但如果只有一个页面被打开，close（）方法同样会退出浏览器。
 deftearDown(self):
   self.driver.close()
+  
 11)代码最后两行是执行测试套件的固定写法，代码如下：
 if__name__=="__main__":
   unittest.main()
@@ -191,7 +211,10 @@ WebDriver  API ，selenium  IDE，selenium grid
 百度搜索： 
 # coding = utf-8 
 from selenium import webdriver 
-browser = webdriver.Firefox() browser.get("http://www.baidu.com") browser.find_element_by_id("kw1").send_keys("selenium") browser.find_element_by_id("su1").click() browser.quit() 
+browser = webdriver.Firefox() 
+browser.get("http://www.baidu.com") 
+browser.find_element_by_id("kw1").send_keys("selenium") 
+browser.find_element_by_id("su1").click() browser.quit() 
 
 
 webdriver python： 元素定位 
@@ -241,12 +264,10 @@ find_element_by_link_text(u‘贴 吧’) ...
 
 
 
-
 find_element_by_xpath(‘//input[@name='wd']’) find_element_by_xpath(‘//input[@class='s_ipt']’) find_element_by_xpath(‘//span[@class='bg s_iptwr']/input’) find_element_by_xpath(‘//form[@id='form1']/span/input’) .... find_element_by_xpath(‘/html/body/div/div[4]/div[2]/div/form/span/input’)
 
 
 css常见语法
-
 
 
 css
@@ -289,6 +310,7 @@ size    返回元素的尺寸
 text    获取元素的文本 
 get_attribute(name)  获得属性值 
 is_displayed()    设置该元素是否用户可见 
+
 … 
 driver.find_element_by_id(“username").clear() 
 driver.find_element_by_id(" username ").send_keys("username") 
@@ -313,10 +335,13 @@ context_click()  右击
 #引入ActionChains类 
 from selenium.webdriver.common.action_chains import ActionChains .... 
 
+
 #定位到要右击的元素 
 right =driver.find_element_by_xpath("xx") 
 
-#对定位到的元素执行鼠标右键操作 ActionChains(driver).context_click(right).perform() .... 
+
+#对定位到的元素执行鼠标右键操作 
+ActionChains(driver).context_click(right).perform() .... 
 
 
 ActionChains 类鼠标操作的常用方法：  
@@ -331,7 +356,8 @@ element = driver.find_element_by_name("xxx")
 #定位元素要移动到的目标位置 
 target =  driver.find_element_by_name("xxx") 
 
-#执行元素的移动操作 ActionChains(driver).drag_and_drop(element,target).perform() 
+#执行元素的移动操作 
+ActionChains(driver).drag_and_drop(element,target).perform() 
 
 
 ActionChains 类鼠标操作的常用方法：  　　
@@ -346,7 +372,8 @@ element = driver.find_element_by_name("xxx")
 #定位元素要移动到的目标位置 
 target =  driver.find_element_by_name("xxx") 
 
-#执行元素的移动操作 ActionChains(driver).drag_and_drop(element,target).perform() 
+#执行元素的移动操作 
+ActionChains(driver).drag_and_drop(element,target).perform() 
 
 Keys 类键盘操作的常用方法： 　　
 send_keys(Keys.BACK_SPACE) 删除键（BackSpace） 　　
@@ -393,14 +420,17 @@ print now_user
 
  脚本中的等待时间： 
 sleep()：    python提供设置固定休眠时间的方法。 
-implicitly_wait()：    是webdirver 提供的一个超时等待。 WebDriverWait()：    同样也是webdirver 提供的方法。 
+implicitly_wait()：    是webdirver 提供的一个超时等待。 
+WebDriverWait()：    同样也是webdirver 提供的方法。 
 
 time.sleep(2)
 
 Python WebDriver API-对话框处理
 现在很多前端框架的对话框是 div 形式的，也有一些弹出框iframe处理比较麻烦，如上一节所说的。使用百度登录页面演示一下，这个登录对话框是个div
-#coding=utf-8 from 
-selenium import webdriver driver = webdriver.Firefox() 
+
+#coding=utf-8 
+from selenium import webdriver 
+driver = webdriver.Firefox() 
 driver.get("http://www.baidu.com/") 
 #点击登录链接 
 driver.find_element_by_name("tj_login").click() 
@@ -419,7 +449,8 @@ find_elements_by_id()
 find_elements_by_name() 
 find_elements_by_class_name() 
 find_elements_by_tag_name() 
-find_elements_by_link_text() find_elements_by_partial_link_text() 
+find_elements_by_link_text() 
+find_elements_by_partial_link_text() 
 find_elements_by_xpath() 
 find_elements_by_css_selector()  
 
@@ -445,7 +476,8 @@ for checkbox in checkboxes:
 
 层级定位： 
 …… 
-#点击Link1链接（弹出下拉列表） driver.find_element_by_link_text('Link1').click() 
+#点击Link1链接（弹出下拉列表） 
+driver.find_element_by_link_text('Link1').click() 
 
 #在父亲元件下找到link为Action的子元素 
 menu = driver.find_element_by_id('dropdown1').find_element_by_link_text('Another action') 
@@ -623,6 +655,11 @@ for input in inputs:
   if input.get_attribute('data-node') == '594434493':   
     input.click() 
 …… 
+
+
+
+
+
 
 
 
